@@ -1,0 +1,28 @@
+{
+  "dataset_name": "power_law_with_cutoff_power_law_with_cutoff",
+
+  "pi": "power_law_with_cutoff",
+  "theta_first_param": 1.5,
+  "theta_second_param": 0.05,
+  "pi_xmax": -1,
+  "pi_xmin": 1,
+  "zeta": 1.0,
+
+  "psi": "power_law_with_cutoff",
+  "vartheta_first_param": 1.5,
+  "vartheta_second_param": 0.05,
+  "psi_xmax": -1,
+  "psi_xmin": 1,
+  "xi": 1.0,
+
+  "Lambda": 548000,
+  "delta": 1.0,
+
+  "num_users": 5000,
+  "num_items": 5000,
+  "tau": 1,
+
+  "ETA_users": "1.0",
+  "ETA_items": "1.0",
+  "EPSILON": 0.02
+}

@@ -1,0 +1,28 @@
+{
+  "dataset_name": "amazon_synthetic",
+
+  "pi": "power_law",
+  "theta_first_param": 2.6,
+  "theta_second_param": 0.0,
+  "pi_xmax": -1,
+  "pi_xmin": 1,
+  "zeta": 1.1,
+
+  "psi": "power_law",
+  "vartheta_first_param": 1.9,
+  "vartheta_second_param": 0.0,
+  "psi_xmax": 110,
+  "psi_xmin": 1,
+  "xi": 0.95,
+
+  "Lambda": 1000,
+  "delta": 1.0,
+
+  "num_users": 31500,
+  "num_items": 12296,
+  "tau": 1,
+
+  "ETA_users": "1.0",
+  "ETA_items": "1.0",
+  "EPSILON": 0.02
+}

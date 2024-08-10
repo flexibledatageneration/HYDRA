@@ -1,0 +1,28 @@
+{
+  "dataset_name": "yahoo_r3_synthetic",
+
+  "pi": "power_law",
+  "theta_first_param": 3.80886,
+  "theta_second_param": 0.0,
+  "pi_xmax": -1,
+  "pi_xmin": 10,
+  "zeta": 1.9,
+
+  "psi": "log_normal",
+  "vartheta_first_param": -0.98089,
+  "vartheta_second_param": 2.4389,
+  "psi_xmax": -1,
+  "psi_xmin": 20,
+  "xi": 1.0,
+
+  "Lambda": 650000,
+  "delta": 1.0,
+
+  "num_users": 15400,
+  "num_items": 1000,
+  "tau": 10,
+
+  "ETA_users": "1.0",
+  "ETA_items": "1.0",
+  "EPSILON": 0.02
+}

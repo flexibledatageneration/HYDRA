@@ -1,0 +1,28 @@
+{
+  "dataset_name": "pop1_pop2_cat1_cat2",
+
+  "pi": "power_law",
+  "theta_first_param": 1.5,
+  "theta_second_param": 0.0,
+  "pi_xmax": -1,
+  "pi_xmin": 1,
+  "zeta": 1.2,
+
+  "psi": "power_law",
+  "vartheta_first_param": 1.5,
+  "vartheta_second_param": 0.0,
+  "psi_xmax": -1,
+  "psi_xmin": 1,
+  "xi": 1.2,
+
+  "Lambda": 8000,
+  "delta": 1.0,
+
+  "num_users": 5000,
+  "num_items": 5000,
+  "tau": 1,
+
+  "ETA_users": "0.5,0.5",
+  "ETA_items": "0.5,0.5",
+  "EPSILON": 0.02
+}

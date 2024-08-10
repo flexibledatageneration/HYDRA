@@ -1,0 +1,15 @@
+ipykernel==6.29.4
+ipython==8.24.0
+joblib==1.4.2
+json5==0.9.25
+jsonpointer==2.4
+jsonschema==4.22.0
+jsonschema-specifications==2023.12.1
+matplotlib==3.9.0
+matplotlib-inline==0.1.7
+numpy==1.26.4
+pandas==2.2.2
+powerlaw==1.5
+seaborn==0.13.2
+recbole==1.2.0
+kmeans_pytorch==0.3

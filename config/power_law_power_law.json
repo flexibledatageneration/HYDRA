@@ -1,0 +1,28 @@
+{
+  "dataset_name": "power_law_power_law",
+
+  "pi": "power_law",
+  "theta_first_param": 1.5,
+  "theta_second_param": 0.0,
+  "pi_xmax": -1,
+  "pi_xmin": 1,
+  "zeta": 1.2,
+
+  "psi": "power_law",
+  "vartheta_first_param": 1.5,
+  "vartheta_second_param": 0.0,
+  "psi_xmax": -1,
+  "psi_xmin": 1,
+  "xi": 1.2,
+
+  "Lambda": 8000,
+  "delta": 1.0,
+
+  "num_users": 6000,
+  "num_items": 5000,
+  "tau": 1,
+
+  "ETA_users": "1.0",
+  "ETA_items": "1.0",
+  "EPSILON": 0.02
+}
