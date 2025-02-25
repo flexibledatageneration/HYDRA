@@ -12,4 +12,5 @@ pandas==2.2.2
 powerlaw==1.5
 seaborn==0.13.2
 recbole==1.2.0
+requests==2.32.3
 kmeans_pytorch==0.3

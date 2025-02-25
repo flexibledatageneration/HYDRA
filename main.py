@@ -1,5 +1,6 @@
 import os
 import numpy as np
+import torch
 from os.path import exists
 import matplotlib.pyplot as plt
 import pandas as pd
@@ -383,7 +384,7 @@ def main(dataset, save_file=True):
     σ = 1e-5
     num_users = params.num_users
     num_items = params.num_items
-    num_attrs = 64
+    num_attrs = params.num_attrs
 
     pi = params.pi
     pi_xmax = params.pi_xmax
@@ -402,6 +403,8 @@ def main(dataset, save_file=True):
     Lambda = params.Lambda
     delta = params.delta
     tau = params.tau
+
+    file_estimated_path = params.file_estimated_path if "file_estimated_path" in vars(params) else ""
 
     if "noisy" in params.dataset_name:
         dataset_path = 'data_generation_files/{}_{}/'.format(params.dataset_name, delta)
@@ -540,6 +543,13 @@ def main(dataset, save_file=True):
     eta_alphas, eta_betas = mu_sigma_to_alpha_beta(mu_eta, σ)
     ω = rng.beta(eta_alphas, eta_betas, size=(num_users, num_items))
 
+    if file_estimated_path != "":
+        rho = torch.load("estimation_files/{}/rho.pt".format(file_estimated_path)).weight.cpu().detach()
+        ρ = torch.softmax(rho, dim=-1).numpy()
+
+        alpha = torch.load("estimation_files/{}/alpha.pt".format(file_estimated_path)).weight.cpu().detach()
+        α = torch.softmax(alpha, dim=-1).numpy()
+
     true_T = ρ @ α.T
     noisy_T = delta * true_T + (1 - delta) * ω
 
@@ -642,6 +652,6 @@ def main(dataset, save_file=True):
     print("Finished")
 
 if __name__ == '__main__':
-    dataset = "movielens-1m_synthetic"
+    dataset = "yahoo_r3_synthetic"
     main(dataset)
 

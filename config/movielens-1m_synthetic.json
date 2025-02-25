@@ -4,23 +4,26 @@
   "pi": "log_normal",
   "theta_first_param": 4.61,
   "theta_second_param": 1.2,
-  "pi_xmax": 2500,
-  "pi_xmin": 10,
-  "zeta": 1.4,
+  "pi_xmax": -1,
+  "pi_xmin": 1,
+  "zeta": 1.0,
 
   "psi": "stretched_exponential",
   "vartheta_first_param": 0.025,
   "vartheta_second_param": 0.691,
-  "psi_xmax": 2500,
+  "psi_xmax": -1,
   "psi_xmin": 1,
   "xi": 1.4,
 
-  "Lambda": 200000,
+  "Lambda": 55000,
   "delta": 1.0,
 
   "num_users": 6000,
   "num_items": 5000,
-  "tau": 10,
+  "num_attrs": 64,
+  "tau": 20,
+
+  "file_estimated_path": "",
 
   "ETA_users": "1.0",
   "ETA_items": "1.0",

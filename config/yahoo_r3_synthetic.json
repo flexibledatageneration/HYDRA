@@ -20,6 +20,7 @@
 
   "num_users": 15400,
   "num_items": 1000,
+  "num_attrs": 64,
   "tau": 10,
 
   "ETA_users": "1.0",
