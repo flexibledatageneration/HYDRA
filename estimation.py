@@ -55,7 +55,7 @@ def load_dataset(dataset):
     if dataset == "movielens-1m":
         if not os.path.exists("real_data/movielens_1m"):
             download_movielens_1m()
-        data = pd.read_csv(os.path.join("movielens_1m/ml-1m", "ratings.dat"), sep="::", engine="python", header=None)
+        data = pd.read_csv(os.path.join("real_data/movielens_1m/ml-1m", "ratings.dat"), sep="::", engine="python", header=None)
     elif dataset == "amazon":
         dataset_path = os.path.join(base_folder, "amazon.csv")
         data = pd.read_csv(dataset_path)
@@ -116,7 +116,7 @@ parser = argparse.ArgumentParser()
 
 # Adding optional argument
 parser.add_argument("-d", "--dataset", help = "Specify dataset name")
-parser.add_argument("-o", "--objective", help = "Specify what to optimize between 'longtails' and 'preferences'")
+parser.add_argument("-o", "--objective", help = "Specify what to optimize between 'longtails', 'preferences' or 'both'")
 parser.add_argument("-ud", "--user_dist", help = "Specify the user distribution (PowerLaw, Exponential, StretchedExponential, Lognormal)")
 parser.add_argument("-id", "--item_dist", help = "Specify the item distribution (PowerLaw, Exponential, StretchedExponential, Lognormal)")
 
@@ -130,10 +130,12 @@ num_epochs = 10000
 learning_rate = 0.001
 num_epochs_early_stopping = 40
 num_negative_interactions_per_user = 1
-objective = args.objective # longtails, preferences
+objective = args.objective # longtails, preferences, both
 
-device_string = "cpu"
-device = torch.device(device_string)
+if objective == "preferences":
+    device_string = 'cuda:{}'.format("0") if torch.cuda.is_available() else 'cpu'
+else:
+    device_string = "cpu"
 
 data = load_dataset(dataset)
 
@@ -373,7 +375,7 @@ try:
         preferences_val_list.append(preferences_val / len(val_dataloader))
         priors_beta_val_list.append(priors_beta_val / len(val_dataloader))
 
-        if objective == "longtails":
+        if objective == "longtails" or objective == "both":
             print(f'Epoch: {epoch}')
             print("Probs distributions:")
             for k, dist_k in enumerate(Q_phi.probs_user):
@@ -392,7 +394,7 @@ try:
             print(f'Train: Longtail Users: {priors_longtail_users_train_list[-1]}, Longtail Items: {priors_longtail_items_train_list[-1]}')
             print(f'Val: Longtail Users: {priors_longtail_users_val_list[-1]}, Longtail Items: {priors_longtail_items_val_list[-1]}')
 
-        if objective == "preferences":
+        if objective == "preferences" or objective == "both":
 
             print(f'Epoch: {epoch}')
             print("Lambda: {}".format(torch.exp(Q_phi.mlp_density(density.to(device)).cpu().detach()).item()))
@@ -408,17 +410,18 @@ try:
                   f'Beta: {priors_beta_val_list[-1]}')
 
         if save_best and (best_loss_val is None \
-            or (objective == "preferences" and best_loss_val > preferences_val_list[-1])\
+            or ((objective == "preferences" or objective == "both") and best_loss_val > preferences_val_list[-1])\
             or (objective == "longtails" and best_loss_val > priors_longtail_users_val_list[-1] + priors_longtail_items_val_list[-1])):
 
-            if objective == "preferences":
+            if objective == "preferences" or objective == "both":
                 best_loss_val = preferences_val_list[-1]
                 torch.save(Q_phi.emb_users, "estimation_files/{}/rho.pt".format(path))
                 torch.save(Q_phi.emb_items, "estimation_files/{}/alpha.pt".format(path))
                 f = open("estimation_files/{}/best_conf_lambda.txt".format(path), "w")
                 f.write("Lambda: {}".format(torch.exp(Q_phi.mlp_density(density.to(device)).cpu().detach()).item()))
                 f.close()
-            elif objective == "longtails":
+
+            if objective == "longtails" or objective == "both":
                 best_loss_val = priors_longtail_users_val_list[-1] + priors_longtail_items_val_list[-1]
                 f = open("estimation_files/{}/best_conf_longtails.txt".format(path), "w")
                 f.write("Probs distributions:\n")
@@ -448,7 +451,7 @@ finally:
 
     traceback.print_exc()
 
-    if save_best and objective == "longtails":
+    if save_best and (objective == "longtails" or objective == "both"):
         plt.figure(figsize=(15, 8))
         plt.plot(priors_longtail_users_train_list, label="Train")
         plt.plot(priors_longtail_users_val_list, label="Val")
@@ -483,7 +486,7 @@ finally:
         plt.yscale('log')
         plt.savefig("estimation_files/{}/plot_loss/priors_longtail_items_log.png".format(path), bbox_inches='tight')
 
-    elif save_best and objective == "preferences":
+    elif save_best and (objective == "preferences" or objective == "both"):
 
         plt.figure(figsize=(15, 8))
         plt.plot(priors_dirichlet_train_list, label="Train")

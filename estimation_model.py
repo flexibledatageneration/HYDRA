@@ -48,6 +48,8 @@ class PowerLawWithCutOff(ProbabilityModel):
     def __init__(self, p=1, xmin=1, seed=1):
         super(PowerLawWithCutOff, self).__init__(p, "PowerLawWithCutOff")
 
+        #torch.manual_seed(seed)
+
         self.xmin = torch.FloatTensor([xmin])
 
         self.logit_alpha = nn.Parameter(torch.nn.init.uniform_(torch.empty(1), 0.1, 0.5), requires_grad=True)
@@ -127,12 +129,17 @@ class StretchedExponential(ProbabilityModel):
 
         # \lambda and \beta need to be > 0
 
+        # print("Log lambda", self.log_Lambda)
+
         Lambda = torch.exp(self.log_Lambda)
         beta = torch.exp(self.log_beta)
+        # print("Lambda", Lambda)
 
         f = (beta - 1) * (torch.log(x) + torch.log(Lambda)) - ((Lambda * x) ** beta)
+        # print("f", f)
 
         C = torch.log(beta) + torch.log(Lambda) + ((Lambda * self.xmin) ** beta)
+        # print("C", C)
 
         return f + C
 
@@ -314,22 +321,25 @@ class Network_loss(nn.Module):
         log_priors_beta_user = self.log_beta_prime(theta_user.reshape(-1), users_degree_relative, sigma_u)
         log_priors_beta_item = self.log_beta_prime(phi_item.reshape(-1), items_degree_relative, sigma_i)
 
+
         if objective == "preferences":
-            if (- log_priors_dirichlet.sum()) > 0.0:
-                c1 = 0.0
-                c2 = 1.0
-                c3 = 1.0
-                c4 = 1.0
-            else:
-                c1 = 0.0
-                c2 = 0.0
-                c3 = 1.0
-                c4 = 1.0
+            c1 = 0.0
+            c2 = 0.0
+            c3 = 1.0
+            c4 = 1.0
         elif objective == "longtails":
             c1 = 1.0
             c2 = 0.0
             c3 = 0.0
             c4 = 0.0
+        elif objective == "both":
+            c1 = 1.0
+            c2 = 0.0
+            c3 = 1.0
+            c4 = 1.0
+
+        if (- log_priors_dirichlet.sum()) > 0.0:
+            c2 = 1.0
 
         # LOSS
         loss = - (log_probs_users + log_probs_items) * c1 \
