@@ -11,11 +11,12 @@ import math
 import os
 import zipfile
 import requests
+import argparse
 
 from estimation_model import Network_loss, Q_phi_Network, StretchedExponential, PowerLaw, Lognormal, Exponential
 
 
-def download_movielens_1m(output_dir="movielens_1m"):
+def download_movielens_1m(output_dir="real_data/movielens_1m"):
     # URL for the MovieLens 1M dataset
     url = "https://files.grouplens.org/datasets/movielens/ml-1m.zip"
     dataset_zip_path = os.path.join(output_dir, "ml-1m.zip")
@@ -47,10 +48,13 @@ def download_movielens_1m(output_dir="movielens_1m"):
 
 def load_dataset(dataset):
     base_folder = "real_data/{}/".format(dataset)
-    if dataset == "movielens-1m":
-        if not os.path.exists("movielens_1m"):
-            download_movielens_1m()
 
+    if not os.path.exists("real_data"):
+        os.makedirs("real_data")
+
+    if dataset == "movielens-1m":
+        if not os.path.exists("real_data/movielens_1m"):
+            download_movielens_1m()
         data = pd.read_csv(os.path.join("movielens_1m/ml-1m", "ratings.dat"), sep="::", engine="python", header=None)
     elif dataset == "amazon":
         dataset_path = os.path.join(base_folder, "amazon.csv")
@@ -107,16 +111,28 @@ def negative_sampling(num_users, num_items, interactions, num_negative_interacti
 
     return neg_interactions
 
-dataset = "movielens-1m"
+# Initialize parser
+parser = argparse.ArgumentParser()
+
+# Adding optional argument
+parser.add_argument("-d", "--dataset", help = "Specify dataset name")
+parser.add_argument("-o", "--objective", help = "Specify what to optimize between 'longtails' and 'preferences'")
+parser.add_argument("-ud", "--user_dist", help = "Specify the user distribution (PowerLaw, Exponential, StretchedExponential, Lognormal)")
+parser.add_argument("-id", "--item_dist", help = "Specify the item distribution (PowerLaw, Exponential, StretchedExponential, Lognormal)")
+
+# Read arguments from command line
+args = parser.parse_args()
+
+dataset = args.dataset
 batch_size = 2**11
 
 num_epochs = 10000
 learning_rate = 0.001
 num_epochs_early_stopping = 40
 num_negative_interactions_per_user = 1
-objective = "preferences" #longtails, preferences
+objective = args.objective # longtails, preferences
 
-device_string = "cpu"#'cuda:{}'.format("0") if torch.cuda.is_available() else 'cpu'
+device_string = "cpu"
 device = torch.device(device_string)
 
 data = load_dataset(dataset)
@@ -205,14 +221,32 @@ xmax_users = users_degree.max()
 xmax_items = items_degree.max()
 
 print("Num Interactions", len(interactions))
-print("XMIN USERS", xmin_users, "XMAX USERS", xmax_users, "XMIN ITEMS", xmin_items, "XMAX ITEMS", xmax_items)
+print("XMIN USERS", xmin_users.item(), "XMAX USERS", xmax_users.item(), "XMIN ITEMS", xmin_items.item(), "XMAX ITEMS", xmax_items.item())
 print("Num users", num_users, "Num items", num_items)
 
-probs_user = [Lognormal(xmin=xmin_users, device=device)]
-# [PowerLaw(xmin=xmin_users, device=device), Exponential(xmin=xmin_users, device=device), StretchedExponential(xmin=xmin_users, device=device), Lognormal(xmin=xmin_users, device=device)]
+probs_user = []
+if args.user_dist == "PowerLaw":
+    probs_user.append(PowerLaw(xmin=xmin_users, device=device))
+elif args.user_dist == "Exponential":
+    probs_user.append(Exponential(xmin=xmin_users, device=device))
+elif args.user_dist == "StretchedExponential":
+    probs_user.append(StretchedExponential(xmin=xmin_users, device=device))
+elif args.user_dist == "Lognormal":
+    probs_user.append(Lognormal(xmin=xmin_users, device=device))
+else:
+    raise Exception("User distribution not available")
 
-probs_item = [StretchedExponential(xmin=xmin_items, device=device)]
-# [PowerLaw(xmin=xmin_items, device=device), Exponential(xmin=xmin_items, device=device), StretchedExponential(xmin=xmin_items, device=device), Lognormal(xmin=xmin_items, device=device)]
+probs_item = []
+if args.item_dist == "PowerLaw":
+    probs_item.append(PowerLaw(xmin=xmin_items, device=device))
+elif args.item_dist == "Exponential":
+    probs_item.append(Exponential(xmin=xmin_items, device=device))
+elif args.item_dist == "StretchedExponential":
+    probs_item.append(StretchedExponential(xmin=xmin_items, device=device))
+elif args.item_dist == "Lognormal":
+    probs_item.append(Lognormal(xmin=xmin_items, device=device))
+else:
+    raise Exception("Item distribution not available")
 
 Q_phi = Q_phi_Network(hidden_dim_users_items, num_users, num_items, probs_user, probs_item, batch_size, device).to(device)
 
@@ -305,24 +339,6 @@ try:
         preferences_train_list.append(preferences_train / len(train_dataloader))
         priors_beta_train_list.append(priors_beta_train / len(train_dataloader))
 
-        with torch.no_grad():
-            print("Params at epoch {}".format(epoch))
-
-            print("Probs distributions:")
-            for k, dist_k in enumerate(Q_phi.probs_user):
-                for h, dist_h in enumerate(Q_phi.probs_item):
-                    print("Dist User {}, Dist Item {}, prob {}".format(dist_k.name, dist_h.name,
-                                                                           softmax_matrix_k_h[k, h]))
-
-            print("Users:")
-            for d, dist in enumerate(Q_phi.probs_user):
-                print("Dist", dist.name, "Params", dist.get_params())
-
-            print("Items:")
-            for d, dist in enumerate(Q_phi.probs_item):
-                print("Dist", dist.name, "Params", dist.get_params())
-            print("Lambda: {}".format(torch.exp(Q_phi.mlp_density(density.to(device)).cpu().detach()).item()))
-
         # VALIDATION
         with torch.no_grad():
             losses_val = []
@@ -357,17 +373,39 @@ try:
         preferences_val_list.append(preferences_val / len(val_dataloader))
         priors_beta_val_list.append(priors_beta_val / len(val_dataloader))
 
-        print(f'Epoch: {epoch}, Loss Train: {np.mean(losses_train)}, Loss Val: {np.mean(losses_val)} \n')
+        if objective == "longtails":
+            print(f'Epoch: {epoch}')
+            print("Probs distributions:")
+            for k, dist_k in enumerate(Q_phi.probs_user):
+                for h, dist_h in enumerate(Q_phi.probs_item):
+                    print("Dist User {}, Dist Item {}, prob {}".format(dist_k.name, dist_h.name,
+                                                                       softmax_matrix_k_h[k, h]))
 
-        print(f'Train: Longtail Users: {priors_longtail_users_train_list[-1]}, Longtail Items: {priors_longtail_items_train_list[-1]},'
-              f' Dirichlet: {priors_dirichlet_train_list[-1]}, '
-              f'Preferences: {preferences_train_list[-1]}, '
-              f'Beta: {priors_beta_train_list[-1]}\n')
+            print("Users:")
+            for d, dist in enumerate(Q_phi.probs_user):
+                print("Dist", dist.name, "Params", dist.get_params())
 
-        print(f'Val: Longtail Users: {priors_longtail_users_val_list[-1]}, Longtail Items: {priors_longtail_items_val_list[-1]},'
-              f' Dirichlet: {priors_dirichlet_val_list[-1]}, '
-              f'Preferences: {preferences_val_list[-1]}, '
-              f'Beta: {priors_beta_val_list[-1]}\n')
+            print("Items:")
+            for d, dist in enumerate(Q_phi.probs_item):
+                print("Dist", dist.name, "Params", dist.get_params())
+
+            print(f'Train: Longtail Users: {priors_longtail_users_train_list[-1]}, Longtail Items: {priors_longtail_items_train_list[-1]}')
+            print(f'Val: Longtail Users: {priors_longtail_users_val_list[-1]}, Longtail Items: {priors_longtail_items_val_list[-1]}')
+
+        if objective == "preferences":
+
+            print(f'Epoch: {epoch}')
+            print("Lambda: {}".format(torch.exp(Q_phi.mlp_density(density.to(device)).cpu().detach()).item()))
+
+            print(f'Train:'
+                  f' Dirichlet: {priors_dirichlet_train_list[-1]}, '
+                  f'Preferences: {preferences_train_list[-1]}, '
+                  f'Beta: {priors_beta_train_list[-1]}')
+
+            print(f'Val:'
+                  f' Dirichlet: {priors_dirichlet_val_list[-1]}, '
+                  f'Preferences: {preferences_val_list[-1]}, '
+                  f'Beta: {priors_beta_val_list[-1]}')
 
         if save_best and (best_loss_val is None \
             or (objective == "preferences" and best_loss_val > preferences_val_list[-1])\

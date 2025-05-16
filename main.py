@@ -9,25 +9,10 @@ from joblib import Parallel, delayed
 import powerlaw
 import argparse
 import json
+import sys
 
 def show_interactions_plot(data, saving_path, eps):
-    #fig, ax = plt.subplots(figsize=(10, 10))
-    #sns.reset_orig()
-    params = {
-        'figure.dpi': 200,
-        "text.usetex": True,
-        'legend.title_fontsize': 14,
-        'legend.fontsize': 14,
-        'axes.labelsize': 20,
-        'axes.titlesize': 16,
-        'xtick.labelsize': 20,
-        'ytick.labelsize': 20,
-        "font.family": "sans-serif",
-        "font.sans-serif": "Computer Modern Sans Serif",
-    }
 
-    import matplotlib as mpl
-    mpl.rcParams.update(params)
     plt.figure()
 
     data['Score'] = np.ones(data.shape[0])
@@ -43,47 +28,20 @@ def show_interactions_plot(data, saving_path, eps):
     if eps is not None:
         plt.title("$\epsilon = {}$".format(eps), fontsize=30)
 
-    #plt.imshow(
-    #    true_util.T,
-    #    interpolation='nearest', aspect='auto',
-    #    cmap='Greens')
-
-    #plt.yticks(np.arange(0, final_num_items+1)[::-1])
-
     plt.xlabel('Users', fontsize=20)
-
-    #     if ETA == 0.1:
     plt.ylabel('Items', fontsize=20)
-    #plt.title("$\epsilon={}$".format(epsilon), fontsize=30)
-    #plt.tight_layout()
 
     plt.tight_layout()
 
-    plt.savefig(saving_path + f'intersections.pdf', dpi=200)
+    plt.savefig(saving_path + f'intersections.png', dpi=200)
 
     plt.show()
 
     plt.clf()
 
-    # plt.show()
 
 def plot_degree_distributions(distributions, images_folder, category=None, population=None, top_lim=None, right_lim=None,
                               color=None, zeta=None, xi=None, Lambda=None):
-    params = {
-        'figure.dpi': 200,
-        "text.usetex": True,
-        'legend.title_fontsize': 20,
-        'legend.fontsize': 20,
-        'axes.labelsize': 25,
-        'axes.titlesize': 16,
-        'xtick.labelsize': 32,
-        'ytick.labelsize': 32,
-        "font.family": "sans-serif",
-        "font.sans-serif": "Computer Modern Sans Serif",
-    }
-
-    import matplotlib as mpl
-    mpl.rcParams.update(params)
 
     if distributions[0] is not None and distributions[2] is not None:
         #plt.figure()
@@ -120,7 +78,7 @@ def plot_degree_distributions(distributions, images_folder, category=None, popul
 
         plt.tight_layout()
 
-        fn = "degree_distributions.pdf"
+        fn = "degree_distributions.png"
         image_path = os.path.join(images_folder, fn)
 
         handles, labels = ax.get_legend_handles_labels()
@@ -136,20 +94,6 @@ def plot_degree_distributions(distributions, images_folder, category=None, popul
         plt.savefig(image_path)
         plt.show()
 
-        '''
-        # SAVE LEGEND
-        legend_size = 10
-
-        fig_legend, axi = plt.subplots(figsize=(1.91, .4))
-
-        fig_legend.legend(handles, labels, ncol=2, fontsize=legend_size)
-        axi.axis('off')
-        fig_legend.tight_layout()
-        fig_legend.savefig("legend.pdf", dpi=200)
-        '''
-
-        #plt.clf()
-
     if distributions[0] is not None:
 
         label = "Items"
@@ -159,10 +103,9 @@ def plot_degree_distributions(distributions, images_folder, category=None, popul
             label += "_{}".format(category)
             fn += "_{}".format(category)
 
-        fn += ".pdf"
+        fn += ".png"
 
         plt.figure()
-
 
         if color is None:
             sns.scatterplot(x=distributions[0], y=distributions[1], label=label, legend=None, s=100, linewidth=0.25)
@@ -175,29 +118,13 @@ def plot_degree_distributions(distributions, images_folder, category=None, popul
         plt.xscale("log")
         plt.yscale("log")
 
-        '''
-        plt.ylim(bottom=0.7, top=10 ** 3)
-        plt.xlim(left=0.7, right=10 ** 4)
-
-        plt.xticks([10 ** 0, 2, 3, 4, 5, 6, 7, 8, 9,
-                    10 ** 1, 20, 30, 40, 50, 60, 70, 80, 90,
-                    10 ** 2, 200, 300, 400, 500, 600, 700, 800, 900,
-                    10 ** 3, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000,
-                    10 ** 4])
-        plt.yticks([10 ** 0, 2, 3, 4, 5, 6, 7, 8, 9,
-                    10 ** 1, 20, 30, 40, 50, 60, 70, 80, 90,
-                    10 ** 2, 200, 300, 400, 500, 600, 700, 800, 900,
-                    10 ** 3])
-        '''
-
         plt.xlabel("Degree")
 
         plt.tight_layout()
 
         image_path = os.path.join(images_folder, fn)
         ax = plt.gca()
-        #handles, labels = ax.get_legend_handles_labels()
-        #ax.get_legend().remove()
+
         ax.spines['left'].set_visible(False)
         ax.spines['right'].set_visible(False)
         ax.spines['top'].set_visible(False)
@@ -217,7 +144,7 @@ def plot_degree_distributions(distributions, images_folder, category=None, popul
             label += "_{}".format(population)
             fn += "_{}".format(population)
 
-        fn += ".pdf"
+        fn += ".png"
 
         plt.figure()
 
@@ -232,31 +159,13 @@ def plot_degree_distributions(distributions, images_folder, category=None, popul
         plt.xscale("log")
         plt.yscale("log")
 
-        '''
-        plt.ylim(bottom=0.7, top=10 ** 4)
-        plt.xlim(left=0.7, right=10 ** 4)
-
-        plt.yticks([10 ** 0, 2, 3, 4, 5, 6, 7, 8, 9,
-                    10 ** 1, 20, 30, 40, 50, 60, 70, 80, 90,
-                    10 ** 2, 200, 300, 400, 500, 600, 700, 800, 900,
-                    10 ** 3, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000,
-                    10 ** 4])
-
-        plt.xticks([10 ** 0, 2, 3, 4, 5, 6, 7, 8, 9,
-                    10 ** 1, 20, 30, 40, 50, 60, 70, 80, 90,
-                    10 ** 2, 200, 300, 400, 500, 600, 700, 800, 900,
-                    10 ** 3, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000,
-                    10 ** 4])
-        '''
-
         plt.xlabel("Degree")
 
         plt.tight_layout()
 
         image_path = os.path.join(images_folder, fn)
         ax = plt.gca()
-        #handles, labels = ax.get_legend_handles_labels()
-        #ax.get_legend().remove()
+
         ax.spines['left'].set_visible(False)
         ax.spines['right'].set_visible(False)
         ax.spines['top'].set_visible(False)
@@ -289,27 +198,9 @@ def compute_degree_distributions(data):
     bottom_x, bottom_distribution = np.unique(user_items, return_counts=True)
     top_x, top_distribution = np.unique(item_users, return_counts=True)
 
-    #np.savetxt(os.path.join(output_folder, f"{dataset}_users_distribution.npy"), bottom_distribution)
-    #np.savetxt(os.path.join(output_folder, f"{dataset}_items_distribution.npy"), top_distribution)
-
     return top_x, top_distribution, bottom_x, bottom_distribution, user_items, item_users
 
 def plot_category_percentages(percentages, saving_path, populations, eps=None):
-    params = {
-        'figure.dpi': 200,
-        "text.usetex": True,
-        'legend.title_fontsize': 14,
-        'legend.fontsize': 14,
-        'axes.labelsize': 25,
-        'axes.titlesize': 16,
-        'xtick.labelsize': 32,
-        'ytick.labelsize': 32,
-        "font.family": "sans-serif",
-        "font.sans-serif": "Computer Modern Sans Serif",
-    }
-
-    import matplotlib as mpl
-    mpl.rcParams.update(params)
 
     percentages = np.array(percentages)
 
@@ -330,19 +221,6 @@ def plot_category_percentages(percentages, saving_path, populations, eps=None):
 
     plt.ylabel("Proportion")
 
-    '''
-    legend = ax.get_legend()
-    handles = legend.legend_handles
-    legend_size = 10
-
-    fig_legend, axi = plt.subplots(figsize=(1.7, .4))
-
-    fig_legend.legend(handles, ["$U_1$", "$U_2$"], ncol=2, fontsize=legend_size)
-    axi.axis('off')
-    fig_legend.tight_layout()
-    fig_legend.savefig("legend_u1_u2.pdf", dpi=200)
-    '''
-
     ax.get_legend().remove()
 
     ax = plt.gca()
@@ -353,31 +231,23 @@ def plot_category_percentages(percentages, saving_path, populations, eps=None):
 
     plt.tight_layout()
 
-    #plt.xlim((-0.1, 1.1))
-    plt.savefig(saving_path + "category_percentage_distribution.pdf")
-    #plt.show()
+    plt.savefig(saving_path + "category_percentage_distribution.png")
 
 def mu_sigma_to_alpha_beta(mu, sigma):
-    """ For Chaney's custom Beta' function, we convert
-        a mean and variance to an alpha and beta parameter
-        of a Beta function. See footnote 3 page 3 of Chaney
-        et al. for details.
-    """
     alpha = ((1-mu) / (sigma**2) - (1/mu)) * mu**2
     beta = alpha * (1/mu - 1)
     return alpha, beta
 
 
-def main(dataset, save_file=True):
+def start_procedure(dataset, save_file=True):
 
     with open("config/{}.json".format(dataset)) as fp:
         params = json.load(fp)
 
-    #sys.argv = args[:1]
     parser = argparse.ArgumentParser()
     t_args = argparse.Namespace()
     t_args.__dict__.update(params)
-    params = parser.parse_args(args=None, namespace=t_args)
+    params, unknown = parser.parse_known_args(args=None, namespace=t_args)
 
     rng = np.random.default_rng(12121995)
 
@@ -456,7 +326,6 @@ def main(dataset, save_file=True):
 
     ρ = np.concatenate(ρ)
 
-    #print("HERE")
 
     num_categories = len(ETA_items)
     num_items_categories = [int(num_items * ETA_items[i]) for i in range(len(ETA_items))]
@@ -652,6 +521,10 @@ def main(dataset, save_file=True):
     print("Finished")
 
 if __name__ == '__main__':
-    dataset = "yahoo_r3_synthetic"
-    main(dataset)
+    if len(sys.argv) < 2:
+        print("Error: provide a config filename")
+        exit(0)
+
+    dataset = sys.argv[1]
+    start_procedure(dataset)
 

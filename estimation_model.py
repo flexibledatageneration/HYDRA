@@ -48,8 +48,6 @@ class PowerLawWithCutOff(ProbabilityModel):
     def __init__(self, p=1, xmin=1, seed=1):
         super(PowerLawWithCutOff, self).__init__(p, "PowerLawWithCutOff")
 
-        #torch.manual_seed(seed)
-
         self.xmin = torch.FloatTensor([xmin])
 
         self.logit_alpha = nn.Parameter(torch.nn.init.uniform_(torch.empty(1), 0.1, 0.5), requires_grad=True)
@@ -129,17 +127,12 @@ class StretchedExponential(ProbabilityModel):
 
         # \lambda and \beta need to be > 0
 
-        # print("Log lambda", self.log_Lambda)
-
         Lambda = torch.exp(self.log_Lambda)
         beta = torch.exp(self.log_beta)
-        # print("Lambda", Lambda)
 
         f = (beta - 1) * (torch.log(x) + torch.log(Lambda)) - ((Lambda * x) ** beta)
-        # print("f", f)
 
         C = torch.log(beta) + torch.log(Lambda) + ((Lambda * self.xmin) ** beta)
-        # print("C", C)
 
         return f + C
 
