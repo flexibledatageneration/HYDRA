@@ -1,6 +1,6 @@
 # HYDRA
 
-#### This is the official repository of the paper "Flexible Generation of Preference Data for Recommendation Analysis" accepted at KDD 2025
+#### This is the official repository of the paper "Flexible Generation of Preference Data for Recommendation Analysis" accepted at KDD 2025 [[Paper]](https://arxiv.org/abs/2407.16594)
 HyDRA is a novel model for generating realistic and flexible synthetic preference data—crucial for simulating and
 analyzing recommendation systems in controlled environments.
 Building effective recommender systems requires high-quality synthetic data that mirrors real-world user behavior.
@@ -129,3 +129,17 @@ python recsys.py <dataset>
 
 - **Output:**
   - A CSV of recall/Hit@{5,10,20} per model in `recbole/<dataset>/`
+
+## Cite us
+If you use HYDRA in your research, please cite our KDD 2025 paper:
+
+```bibtex
+@misc{mungari2025flexiblegenerationpreferencedata,
+      title={Flexible Generation of Preference Data for Recommendation Analysis}, 
+      author={Simone Mungari and Erica Coppolillo and Ettore Ritacco and Giuseppe Manco},
+      year={2025},
+      eprint={2407.16594},
+      archivePrefix={arXiv},
+      primaryClass={cs.IR},
+      url={https://arxiv.org/abs/2407.16594},
+}
