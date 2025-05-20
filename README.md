@@ -11,10 +11,27 @@ popularity and engagement using mixtures of distributions, offering greater real
 
 ## Approach
 HyDRA generates synthetic datasets by simulating:
+1. **User Engagement** — Modeled with long-tail (e.g., power-law, exponential) distributions.
+> - Draw user distribution choice $k \sim \textrm{Discrete}(\pi)$
 
-1. **User-Item Matching** — Based on latent Dirichlet-distributed feature vectors.
-2. **User Engagement** — Modeled with long-tail (e.g., power-law, exponential) distributions.
-3. **Item Popularity** — Simulated similarly via customizable probabilistic priors.
+2. **Item Popularity** — Simulated similarly via customizable probabilistic priors.
+> - Draw item distribution choice $h \sim \textrm{Discrete}(\psi)$
+
+3. **User-Item Matching** — Based on latent Dirichlet-distributed feature vectors.
+> - For $u \in U$:
+>    - Draw $\rho_u \sim \text{Dirichlet}(10 \cdot \mu_u^\rho)$, where $\mu_u^\rho \sim \text{Dirichlet}(\mathbf{1}_f)$
+>    - Draw $\varrho_u \sim \text{Beta}'(z_u / m, \sigma_u)$, where $z_u \sim P_{\theta_k}$
+> - For $i \in I$
+>    - Draw $\alpha_i \sim \textrm{Dirichlet}(0.1 \, \mu_i^\alpha), \,\ \mbox{where } \mu_i^\alpha \sim \textrm{Dirichlet}(\mathbf{100}_f)$
+>    - Draw $\varphi_i \sim \mathit{Beta}'(y_i/n, \sigma_i), \; \mbox{where } y_i \sim P_{\vartheta_h}$
+
+<img src="imgs/multi_user_dirichlet.png" width="200"/> <img src="imgs/multi_item_dirichlet.png" width="200"/> 
+
+User (left) and item (right) representations within a three-dimensional feature space, according to the proposed User-Item Matching model. Users are evenly distributed within the latent space. By contrast, item samples tend to concentrate along specific subsets of the latent features, representing edges/corners in the feature space.
+
+> - For $u \in U$ and $i \in I$:
+>   - If $\textrm{Bernoulli} \big(\lambda\cdot \rho_u^\top \alpha_i \cdot \varrho_u \cdot \varphi_i \big)$ then: Generate $(u,i)$
+
 
 ## Usage
 
