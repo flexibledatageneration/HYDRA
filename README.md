@@ -31,11 +31,33 @@ User (left) and item (right) representations within a three-dimensional feature 
 
 4) **Combining (1), (2) and (3)**
 > - For $u \in U$ and $i \in I$:
->   - If $\textrm{Bernoulli} \big(\lambda\cdot \rho_u^\top \alpha_i \cdot \varrho_u \cdot \varphi_i \big)$ then: Generate $(u,i)$
+>   - If $\textrm{Bernoulli} \big(\lambda\cdot \rho_u^\top \alpha_i \cdot \varrho_u^{\zeta} \cdot \varphi_i^{\xi} \big)$ then: Generate $(u,i)$
 
+### Examples
+- Combination of different degree distributions:
+  
 <img src="imgs/log_normal-log_normal.jpg" width="200"/> <img src="imgs/power_law_with_cutoff-power_law.jpg" width="200"/> <img src="imgs/power_law_with_cutoff-power_law_with_cutoff.jpg" width="200"/> <img src="imgs/stretched_exponential-power_law.jpg" width="200"/> 
 
-Examples of different degree distributions with the following priors: (left) Power-Law with exponential cut-off for users and items; (mid-left) Power-Law with exponential cut-off for users and Power-Law for items; (mid-right) Stretched Exponential for users, Power-Law for items; (right) Log-Normal distribution for users and items.
+(left) Power-Law with exponential cut-off for users and items; (mid-left) Power-Law with exponential cut-off for users and Power-Law for items; (mid-right) Stretched Exponential for users, Power-Law for items; (right) Log-Normal distribution for users and items.
+
+- Effects of $\lambda$ on the generated data distributions:
+  
+<img src="imgs/degree_distributions_lambda_10^2.jpg" width="200"/> <img src="imgs/degree_distributions_lambda_10^3.jpg" width="200"/> <img src="imgs/degree_distributions_lambda_10^4.jpg" width="200"/>
+
+<img src="imgs/degree_distributions_lambda_10^5.jpg" width="200"/> <img src="imgs/degree_distributions_lambda_10^6.jpg" width="200"/> <img src="imgs/degree_distributions_lambda_10^7.jpg" width="200"/> 
+
+- Effects of $\zeta$ on the generated data distributions:
+  
+<img src="imgs/degree_distributions_zeta_0.5.jpg" width="200"/> <img src="imgs/degree_distributions_zeta_0.75.jpg" width="200"/> <img src="imgs/degree_distributions_zeta_1.0.jpg" width="200"/>
+
+<img src="imgs/degree_distributions_zeta_1.25.jpg" width="200"/> <img src="imgs/degree_distributions_zeta_1.5.jpg" width="200"/> <img src="imgs/degree_distributions_zeta_1.75.jpg" width="200"/>
+
+- Effects of $\xi$ on the generated data distributions:
+  
+<img src="imgs/degree_distributions_xi_0.5.jpg" width="200"/> <img src="imgs/degree_distributions_xi_0.75.jpg" width="200"/> <img src="imgs/degree_distributions_xi_1.0.jpg" width="200"/>
+
+<img src="imgs/degree_distributions_xi_1.25.jpg" width="200"/> <img src="imgs/degree_distributions_xi_1.5.jpg" width="200"/> <img src="imgs/degree_distributions_xi_1.75.jpg" width="200"/>
+
 
 ## Usage
 
