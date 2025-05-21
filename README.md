@@ -11,13 +11,13 @@ popularity and engagement using mixtures of distributions, offering greater real
 
 ## Approach
 HyDRA generates synthetic datasets by simulating:
-1. **User Engagement** — Modeled with long-tail (e.g., power-law, exponential) distributions.
+1) **User Engagement** — Modeled with long-tail (e.g., power-law, exponential) distributions.
 > - Draw user distribution choice $k \sim \textrm{Discrete}(\pi)$
 
-2. **Item Popularity** — Simulated similarly via customizable probabilistic priors.
+2) **Item Popularity** — Simulated similarly via customizable probabilistic priors.
 > - Draw item distribution choice $h \sim \textrm{Discrete}(\psi)$
 
-3. **User-Item Matching** — Based on latent Dirichlet-distributed feature vectors.
+3) **User-Item Matching** — Based on latent Dirichlet-distributed feature vectors.
 > - For $u \in U$:
 >    - Draw $\rho_u \sim \text{Dirichlet}(10 \cdot \mu_u^\rho)$, where $\mu_u^\rho \sim \text{Dirichlet}(\mathbf{1}_f)$
 >    - Draw $\varrho_u \sim \text{Beta}'(z_u / m, \sigma_u)$, where $z_u \sim P_{\theta_k}$
@@ -29,9 +29,13 @@ HyDRA generates synthetic datasets by simulating:
 
 User (left) and item (right) representations within a three-dimensional feature space, according to the proposed User-Item Matching model. Users are evenly distributed within the latent space. By contrast, item samples tend to concentrate along specific subsets of the latent features, representing edges/corners in the feature space.
 
+4) **Combining (1), (2) and (3)**
 > - For $u \in U$ and $i \in I$:
 >   - If $\textrm{Bernoulli} \big(\lambda\cdot \rho_u^\top \alpha_i \cdot \varrho_u \cdot \varphi_i \big)$ then: Generate $(u,i)$
 
+<img src="imgs/log_normal-log_normal.jpg" width="200"/> <img src="imgs/power_law_with_cutoff-power_law.jpg" width="200"/> <img src="imgs/power_law_with_cutoff-power_law_with_cutoff.jpg" width="200"/> <img src="imgs/stretched_exponential-power_law.jpg" width="200"/> 
+
+Examples of different degree distributions with the following priors: (left) Power-Law with exponential cut-off for users and items; (mid-left) Power-Law with exponential cut-off for users and Power-Law for items; (mid-right) Stretched Exponential for users, Power-Law for items; (right) Log-Normal distribution for users and items.
 
 ## Usage
 
