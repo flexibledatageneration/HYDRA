@@ -177,12 +177,10 @@ python recsys.py <dataset>
 If you use HYDRA in your research, please cite our KDD 2025 paper:
 
 ```bibtex
-@misc{mungari2025flexiblegenerationpreferencedata,
-      title={Flexible Generation of Preference Data for Recommendation Analysis}, 
-      author={Simone Mungari and Erica Coppolillo and Ettore Ritacco and Giuseppe Manco},
-      year={2025},
-      eprint={2407.16594},
-      archivePrefix={arXiv},
-      primaryClass={cs.IR},
-      url={https://arxiv.org/abs/2407.16594},
+@inproceedings{mungari2025flexible,
+  title={Flexible Generation of Preference Data for Recommendation Analysis},
+  author={Mungari, Simone and Coppolillo, Erica and Ritacco, Ettore and Manco, Giuseppe},
+  booktitle={Proceedings of the 31st ACM SIGKDD Conference on Knowledge Discovery and Data Mining V. 2},
+  pages={5710--5721},
+  year={2025}
 }
